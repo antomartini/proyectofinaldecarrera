@@ -1,0 +1,75 @@
+<app-header titulo="MODIFICAR NOTIFICACIÓN"></app-header>
+
+<ion-content>
+    <!-- Campo Fecha de la notificación -->
+    <ion-item>
+      <ion-label>Fecha de Creación</ion-label> </ion-item>
+    <ion-item>
+      <ion-datetime [(ngModel)]="fecha_creacion" 
+                    displayFormat="YYYY-MM-DD" 
+                    [pickerOptions] = "customPickerOptions"
+                    min="1900-01-01" 
+                    max="2019-12-31"></ion-datetime>
+    </ion-item>           
+
+    <!-- Campo Ubicación Geográfica de la notificación  -->
+    <ion-item>
+        <ion-label>Ubicación Geográfica: {{lat}} {{lon}} </ion-label>
+    </ion-item>
+    <ion-item>
+        <ion-button fill="outline" expand="full" slot="end" size="small" (click)="agregarUbicacionActual()">Posición Actual</ion-button>
+        <ion-button fill="outline" expand="full" slot="end" size="small" type="file" (click)="agregarOtraUbicacion()">Agregar otra</ion-button>
+    </ion-item>
+
+       <ion-item>
+          <ion-label>Tipo de Notificación</ion-label>
+      </ion-item>
+    
+      <ion-toolbar> 
+        <ion-tabs >
+            <ion-tab-bar>
+                <ion-tab-button (click)="tipoNotificacion(c.redirectTo)" 
+                                *ngFor="let c of componentes | async" [routerLink] = "c.redirectTo">
+                    <img [src]="c.icon" height="40px">
+                    <ion-label>{{ c.name }}</ion-label>
+                </ion-tab-button>
+            </ion-tab-bar>
+        </ion-tabs >
+    </ion-toolbar>
+
+      <ion-item>
+          <ion-label>Imagen</ion-label>
+        </ion-item>
+     <ion-item>
+        <ion-button fill="outline" expand="full" slot="end" size="small" (click)="getPicture($event)">Capturar</ion-button>
+
+        <ion-button fill="outline" expand="full" slot="end" size="small" (click)="agregarImagen($event)">Galerìa</ion-button>
+      </ion-item>
+
+        <ion-item>
+            <ion-label>Descripción</ion-label>
+        </ion-item>
+        <ion-item>
+            <ion-textarea [(ngModel)]="descripcion" placeholder="Escribe una descripción sobre la notificación"></ion-textarea>
+        </ion-item>
+    
+
+
+  <ion-item> 
+         <ion-button expand="full" slot="end" size="small" (click)="crearNotificacion()">ACEPTAR</  ion-button>
+  </ion-item>
+
+
+    <div class="preview">
+      <img [src]="url" alt="">
+    </div>
+    <div class="uploadbtn">
+      <label>files
+        <input (change)="uploadImage($event)" type="file" class="image-upload" accept="image/*">
+      </label>
+    </div>
+
+
+</ion-content>
+ 
+<app-footer></app-footer>

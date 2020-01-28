@@ -1,0 +1,20 @@
+[
+    {
+        "icon": "assets/icon/caminos.png",
+        "name": "Camino",
+        "redirectTo": "/caminonuevo"
+    },
+
+    {
+        "icon": "assets/icon/estados.png",
+        "name": "Estado",
+        "redirectTo": "/estadocamino"
+    },
+
+    {
+        "icon": "assets/icon/afectaciones.png" ,
+        "name": "Afectacion",
+        "redirectTo": "/creacionafectacion"
+    }
+    
+]

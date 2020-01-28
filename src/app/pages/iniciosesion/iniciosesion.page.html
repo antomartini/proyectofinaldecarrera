@@ -1,0 +1,20 @@
+<app-header titulo="INICIAR SESIÓN"></app-header>
+
+<ion-content>
+
+  <ion-item>
+    <ion-label position="stacked">Cuenta de Usuario</ion-label>
+    <ion-input round type="text" placeholder="Usuario" [(ngModel)]="usuario"></ion-input>
+  </ion-item>
+  
+  <ion-item>
+    <ion-label position="stacked">Contraseña</ion-label>
+    <ion-input type="password" placeholder="Password" [(ngModel)]="password" ></ion-input>
+  </ion-item>
+
+
+  <ion-button color="primary" expand="full" (click)="prosesLogin()" >INICIAR SESIÓN DE USUARIO</ion-button>
+
+
+</ion-content>
+

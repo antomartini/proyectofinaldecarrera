@@ -1,5 +1,7 @@
 {
   "name": "aplicacionmovil",
-  "integrations": {},
+  "integrations": {
+    "cordova": {}
+  },
   "type": "angular"
 }

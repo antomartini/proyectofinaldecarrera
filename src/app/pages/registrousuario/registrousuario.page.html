@@ -1,0 +1,70 @@
+<app-header titulo="REGISTRARSE"></app-header>
+
+<ion-content>
+<!-- Inputs with labels -->
+
+<ion-item>
+  <ion-label position="stacked">Nombre</ion-label>
+  <ion-input type="text" [(ngModel)]="nombre"></ion-input>
+</ion-item>
+
+<ion-item>
+  <ion-label position="stacked">Apellido</ion-label>
+  <ion-input type="text" [(ngModel)]="apellido"></ion-input>
+</ion-item>
+
+<ion-item>
+  <ion-label position="stacked">Nombre de Usuario</ion-label>
+  <ion-input type="text" [(ngModel)]="usuario"></ion-input>
+</ion-item>
+
+<ion-item>
+  <ion-label position="stacked">Contraseña</ion-label>
+  <ion-input type="password" [(ngModel)]="password"></ion-input>
+</ion-item>
+
+<ion-item>
+  <ion-label position="stacked">Confirmar Contraseña</ion-label>
+  <ion-input type="password" [(ngModel)]="confirm_password"></ion-input>
+</ion-item>
+
+<ion-item>
+  <ion-label position="stacked">Correo Electronico: </ion-label>
+  <ion-input type="text" [(ngModel)]="correoelectronico"></ion-input>
+</ion-item>
+
+<ion-item>
+  <ion-label position="stacked">Fecha de Nacimiento</ion-label>
+  <ion-datetime [(ngModel)]="fecha_nacimiento" 
+                [pickerOptions] = "customPickerOptions"
+                displayFormat="YYYY-MM-DD" 
+                min="1900-01-01" 
+                max="2019-12-31"></ion-datetime>
+</ion-item>
+
+<ion-item>
+  <ion-label position="stacked">Actividad Económica</ion-label>
+  <ion-select [(ngModel)]="actividad_economica" okText="ACEPTAR" cancelText="CANCELAR">
+    <ion-select-option *ngFor="let actividad of actividades" >{{actividad}}</ion-select-option>
+  </ion-select>
+</ion-item>
+
+<ion-item>
+  <ion-label position="stacked">Departamento</ion-label>
+    <ion-select [(ngModel)]="departamento" okText="ACEPTAR" cancelText="CANCELAR">
+      <ion-select-option>CASTELLANOS</ion-select-option>
+      <ion-select-option>LAS COLONIAS</ion-select-option>
+    </ion-select>
+</ion-item>
+
+<ion-item>
+  <ion-label position="stacked">Localidad</ion-label>
+<ion-select [(ngModel)]="localidad" okText="ACEPTAR" cancelText="CANCELAR">
+    <ion-select-option *ngFor="let localidad of localidadesCastellanos" >{{localidad}}</ion-select-option>
+    <ion-select-option *ngFor="let localidad of localidadesLasColonias" >{{localidad}}</ion-select-option>
+  </ion-select>
+</ion-item>
+
+<ion-button color="primary" (click)="prosesRegister()" >REGISTRARSE</ion-button>
+
+</ion-content>
