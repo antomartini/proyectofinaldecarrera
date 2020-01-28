@@ -1,0 +1,66 @@
+<!-- // //Login de Usuarios registrados
+// if (!empty($_POST)) {
+// 	$usuario = mysqli_real_escape_string($conexion,$_POST['user']);
+// 	$password = mysqli_real_escape_string($conexion,$_POST['pass']);
+// 	$password_encriptada = sha1($password);
+// 	$sql = "SELECT idusuarios FROM usuario 
+// 			WHERE usuario ='$usuario' AND password = '$password_encriptada' ";
+// 	$resultado = $conexion->query($sql);
+// 	$rows = $resultado->num_rows;
+// 	if($rows > 0) {
+// 		$row = $resultado->fetch_assoc();
+// 		$_SESSION['id_usuario'] = $row["idusuarios"];
+// 		header("Location: admin.php");
+// 	} else {
+
+// 		echo "<script>
+// 			alert('Usuario o Password Incorrecto');
+// 			window.location = 'index.php';
+// 		</script>";
+
+// 	}
+
+// }
+
+// // <!--registrar usuario -->
+// if (isset($_POST["registrar"])) {
+// 	// mysqli_real_escape_string
+// 	// usa para crear una cadena SQL legal que se puede usar en una sentencia SQL. 
+// 	// La cadena dada es codificada a una cadena SQL escapada, 
+// 	// tomando en cuenta el conjunto de caracteres actual de la conexión.
+// 	$nombre = mysqli_real_escape_string($conexion,$_POST['nombre']);
+// 	$correo = mysqli_real_escape_string($conexion,$_POST['correo']);
+// 	$usuario = mysqli_real_escape_string($conexion,$_POST['user']);
+// 	$password = mysqli_real_escape_string($conexion,$_POST['pass']);
+// 	$password_encriptada = sha1($password);
+// 	$sqluser = "SELECT idusuarios FROM usuario WHERE usuario = '$usuario'";
+// 	$resultadouser = $conexion->query($sqluser);
+// 	$filas = $resultadouser->num_rows;
+// 	if($filas > 0){
+// 		echo "<script>
+// 			alert('El usuario ya existe', $filas);
+// 			window.location = 'index.php';
+// 		</script>";
+// 	} else {
+// 		// <!-- insertar informacion del usuario -->
+// 		$sqlusuario = "INSERT INTO usuario(Nombre, Correo, Usuario, Password) 
+// 		VALUES ('$nombre','$correo','$usuario','$password_encriptada')";
+// 		$resultadousuario = $conexion->query($sqlusuario);
+		
+// 		if($resultadousuario > 0) {
+// 			echo "<script>
+		
+// 				alert('Registro Exitoso', $filas);
+// 				window.location = 'index.php';
+
+// 			</script>";
+// 		} else {
+// 			echo "<script>
+// 				alert('ERROR al registrarse');
+// 				window.location = 'index.php';
+// 			</script>";
+// 		}
+// 	}
+// }
+
+?> -->
