@@ -11,6 +11,65 @@ include("conexion.php");
 $postjson = json_decode(file_get_contents('php://input'), true);
 $today    = date('Y-m-d');
 
+// // //Actualizacion todos los días, tiempo de notificaciones
+$sqlnotificaciones = "SELECT * FROM Notificacion WHERE estado = '1'";
+$resultadonotificaciones = $conexion->query($sqlnotificaciones);
+
+while ($data = mysqli_fetch_array($resultadonotificaciones)) {
+	//$today = date('Y-m-d', strtotime(str_replace('-', '/', $today)));
+	$fecha = date('Y-m-d', strtotime(str_replace('-', '/', $data['fecha_creacion'])));
+	$diferencia = "SELECT DATEDIFF($today, $today)";
+	$sqldiferencia = $conexion->query($diferencia);
+	$tiempovida = mysqli_fetch_array($sqldiferencia);
+
+	// Obtenemos la diferencia en milisegundos
+	$diff = abs(strtotime($today) - strtotime($fecha));
+	$years = floor($diff / (365*60*60*24));
+	$months = floor(($diff - $years * 365*60*60*24) / (30*60*60*24));
+	// Obtenemos la diferencia en milisegundos
+	//$diff = abs(strtotime($today) - strtotime($fecha));
+	$tiempovida = floor(($diff - $years * 365*60*60*24 - $months*30*60*60*24)/ (60*60*24));
+	
+	// Es ESTADO
+	 if($data['tipo_notificacion'] == 2) { 
+	 	$notificacion = "SELECT * FROM Estado WHERE id_notificacion = '$data[id_notificacion]'";
+	 	$sqlnotif = $conexion->query($notificacion);
+
+		if ($tiempovida == 60) {
+			$queryNotificacion = "UPDATE Notificacion SET estado='0'
+			 				WHERE id_notificacion = '$data[id_notificacion]'";
+			$resultadonotificacion = $conexion->query($queryNotificacion); 
+			$queryNotificacion = "UPDATE Estado SET tiempo_vida='0'
+			WHERE id_notificacion = '$data[id_notificacion]'";
+			$resultadonotificacion = $conexion->query($queryNotificacion);
+		} else {
+			$tiempovida = 60 - $tiempovida;
+			$queryNotificacion = "UPDATE Estado SET tiempo_vida='$tiempovida'
+			WHERE id_notificacion = '$data[id_notificacion]'";
+			$resultadonotificacion = $conexion->query($queryNotificacion); 
+		}
+
+	 } else {
+	 // ES AFECTACION
+
+	 if ($tiempovida == 30) {
+		$queryNotificacion = "UPDATE Afectacion SET estado='0'
+						 WHERE id_notificacion = '$data[id_notificacion]'";
+		$resultadonotificacion = $conexion->query($queryNotificacion); 
+		$queryNotificacion = "UPDATE Estado SET tiempo_vida='0'
+		WHERE id_notificacion = '$data[id_notificacion]'";
+		$resultadonotificacion = $conexion->query($queryNotificacion);
+	} else {
+		$tiempovida = 30 - $tiempovida;
+		$queryNotificacion = "UPDATE Afectacion SET tiempo_vida='$tiempovida'
+		WHERE id_notificacion = '$data[id_notificacion]'";
+		$resultadonotificacion = $conexion->query($queryNotificacion); 
+	}
+
+	}
+
+} // FIN CICLO DE ACTUALIZACION
+
 
 // Para registrar el usuario en la base de datos
 if($postjson['aksi']=='register'){
@@ -25,8 +84,7 @@ if($postjson['aksi']=='register'){
 		// <!-- insertar informacion del usuario -->
 		$nombre = mysqli_real_escape_string($conexion,$postjson['nombre']);
 		$apellido = mysqli_real_escape_string($conexion,$postjson['apellido']);
-		$fecha = mysqli_real_escape_string($conexion,$postjson['fecha_nacimiento']);
-		$fecha_nacimiento = date('Y-m-d', strtotime(str_replace('-', '/', $fecha)));
+		$fecha_nacimiento = date('Y/m/d',strtotime($postjson['fecha_nacimiento']));
 		$correoelectronico = mysqli_real_escape_string($conexion,$postjson['correoelectronico']);
 		$actividad_economica = mysqli_real_escape_string($conexion,$postjson['actividad_economica']);
 		$localidad= mysqli_real_escape_string($conexion,$postjson['localidad']);
@@ -197,11 +255,8 @@ elseif($postjson['aksi']=="login"){
 
  // Creacion de nueva notificacion
 elseif ($postjson['aksi']=='notificacionnueva') {  
-	// Crear una notificacion nueva
-
 	// Variables para la creacion de una notificacion
-	$fecha_creacion = mysqli_real_escape_string($conexion,$postjson['fecha_creacion']);
-	$fecha_creacion = date('Y-m-d', strtotime(str_replace('-', '/', $fecha_creacion)));
+	$fecha_creacion = date('Y/m/d',strtotime($postjson['fecha_creacion']));
 	$lon = mysqli_real_escape_string($conexion,$postjson['lon']);
 	$lat = mysqli_real_escape_string($conexion,$postjson['lat']);
 	$imagen = mysqli_real_escape_string($conexion,$postjson['imagen']);
@@ -218,8 +273,8 @@ elseif ($postjson['aksi']=='notificacionnueva') {
 	$extraido= mysqli_fetch_array($ejecucionconsulta);
 	
 	// Insertar notificacion nueva
-	$sqlnotificacionnueva = "INSERT INTO Notificacion (fecha_creacion,lon,lat,descripcion,tipo_notificacion,id_usuario_reg,imagen) 
-	VALUES ('$fecha_creacion','$lon','$lat','$descripcion','$tipo_notificacion','$extraido[id_usuario_reg]','$imagen') ";
+	$sqlnotificacionnueva = "INSERT INTO Notificacion (fecha_creacion,fecha_actualizacion,lon,lat,descripcion,tipo_notificacion,id_usuario_reg,imagen) 
+	VALUES ('$fecha_creacion','$today','$lon','$lat','$descripcion','$tipo_notificacion','$extraido[id_usuario_reg]','$imagen') ";
 	//Se ejecuta el INSERT en la BD
 	$resultadonotificacionnueva= $conexion->query($sqlnotificacionnueva);
 
@@ -249,6 +304,11 @@ elseif ($postjson['aksi']=='notificacionnueva') {
 		//Se ejecuta el INSERT en la BD
 		$resultadoestado = $conexion->query($sqlestado);
 	}
+
+	// Valoración de la notificacion
+	$sqlvalor = "INSERT INTO Valoracion (id_notificacion,valor_notificacion,cantidad) 
+	VALUES ('$extraido[id_notificacion]','0','1')";
+	$resultadovalor = $conexion->query($sqlvalor);
 
 	//Si el registro fue exitoso	
 	if($resultadonotificacionnueva > 0) {
@@ -430,6 +490,24 @@ elseif($postjson['aksi']=="comentarnotificacion"){
 		  $result = json_encode(array('result'=>$comentarios));
 		echo $result;
 	}
+} elseif($postjson['aksi']=="valorar"){
+
+	$id_notificacion = mysqli_real_escape_string($conexion,$postjson['id']);
+	$valor = mysqli_real_escape_string($conexion,$postjson['valor']);
+
+	$consulta = "SELECT * FROM Valoracion WHERE id_notificacion = '$postjson[id]'";
+	$resultado = $conexion->query($consulta);
+	$extraido = mysqli_fetch_array($resultado);
+
+	$cantidad = $extraido['cantidad'] + 1;
+	echo $cantidad;
+	$valornuevo = ($valor + $extraido['valor_notificacion']) / 2;
+	echo $valornuevo;
+
+	$queryvaloracion = "UPDATE Valoracion SET valor_notificacion='$valornuevo', cantidad='$cantidad'
+						 WHERE id_notificacion = '$id_notificacion' "; 
+	$resultadovalor = $conexion->query($queryvaloracion);
+	
 }
 
 
