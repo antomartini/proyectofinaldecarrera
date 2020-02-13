@@ -17,6 +17,11 @@ export class NotificacionesService {
   public customLatitudNueva = this.latitudNueva.asObservable();
   public customLongitudNueva = this.longitudNueva.asObservable();
 
+  private latitudcamino = new BehaviorSubject<number> (0);
+  private longitudcamino = new BehaviorSubject<number> (0);
+  public customLatitudCamino = this.latitudNueva.asObservable();
+  public customLongitudCamino = this.longitudNueva.asObservable();
+
   constructor() { }
 
   public changeEstado(est: string): void {
@@ -32,8 +37,10 @@ export class NotificacionesService {
     this.longitudNueva.next(lon);
   }
 
-
-  
+  public changeCaminoNuevo(lat: number, lon: number): void {
+    this.latitudcamino.next(lat);
+    this.longitudcamino.next(lon);
+  }
 
 
 }

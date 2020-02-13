@@ -1,16 +1,29 @@
-<ion-header>
+<ion-header style="background-color: #d5ebe2;">
   <ion-toolbar>
-    <ion-title>INICIO DE SESION</ion-title>
+    <ion-title class="ion-text-center" style="color: #1a8e55;"><b>RURAL APP</b></ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
+<ion-content style="background-color: #d5ebe2;">
+
+
+
+
+  <img src='assets/icon/icono_app.png'>
+ 
 
   <ion-button expand="block" (click)="signUp()" >REGISTRARSE</ion-button>
   <ion-button expand="block" (click)="signIn()" >ABRIR SESION DE USUARIO</ion-button>
   <ion-button expand="block" (click)= "usuarioinvitado()">ACCEDER COMO USUARIO INVITADO</ion-button>
+<br/>
+<br/>
 
 
-  <ion-button expand="block" fill="outline">INGRESAR CON FACEBOOK</ion-button>
-  <ion-button expand="block" fill="outline">INGRESAR CON GOOGLE</ion-button>
+  <ion-button expand="block" fill="outline" (click)="ingresarFacebook()" >INGRESAR CON FACEBOOK</ion-button>
+  <ion-button expand="block" fill="outline" (click)="ingresarGoogle()" >INGRESAR CON GOOGLE</ion-button>
+
+  
+  <img src='assets/icon/logo_provincia.png'>
+ 
+
 </ion-content>

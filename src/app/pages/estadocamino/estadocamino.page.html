@@ -1,11 +1,12 @@
-<app-header titulo="ESTADO DE CAMINO RURAL"></app-header>
+<app-header titulo="Crear Estado de Camino"></app-header>
 
 <ion-content>
 
   <!-- Checkboxes/estados en una lista -->
 <ion-list *ngFor="let estado of estados">
     <ion-item >
-      <ion-label>{{estado.val}}</ion-label>
+      <img [src]="icon" height="30px">
+      <ion-label><b><i>{{estado.val}}</i> </b></ion-label>
       <ion-checkbox slot="end" [(ngModel)]="estado.isChecked" (click)="validar(estado.val)"></ion-checkbox>
     </ion-item>
     <ion-item><ion-text>{{estado.texto}}</ion-text></ion-item>

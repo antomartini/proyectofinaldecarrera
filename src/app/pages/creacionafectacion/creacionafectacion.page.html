@@ -1,11 +1,12 @@
-<app-header titulo="CREAR AFECTACIÓN"></app-header>
+<app-header titulo="Crear Afectación"></app-header>
 
 <ion-content>
 
     <!-- Checkboxes/estados en una lista -->
   <ion-list *ngFor="let afectacion of afectaciones">
       <ion-item >
-        <ion-label>{{afectacion.val}}</ion-label>
+        <img [src]="icon" height="30px">
+        <ion-label><b><i>{{afectacion.val}}</i></b></ion-label>
         <ion-checkbox slot="end" [(ngModel)]="afectacion.isChecked" (click)="validar(afectacion.val)"></ion-checkbox>
       </ion-item>
       <ion-item><ion-text>{{afectacion.texto}}</ion-text></ion-item>

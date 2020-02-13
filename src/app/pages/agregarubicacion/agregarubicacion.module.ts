@@ -1,3 +1,4 @@
+import { ComponentesModule } from './../../componentes/componentes.module';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -5,12 +6,12 @@ import { Routes, RouterModule } from '@angular/router';
 
 import { IonicModule } from '@ionic/angular';
 
-import { UsuarioinvitadoPage } from './usuarioinvitado.page';
+import { AgregarubicacionPage } from './agregarubicacion.page';
 
 const routes: Routes = [
   {
     path: '',
-    component: UsuarioinvitadoPage
+    component: AgregarubicacionPage
   }
 ];
 
@@ -18,9 +19,10 @@ const routes: Routes = [
   imports: [
     CommonModule,
     FormsModule,
+    ComponentesModule,
     IonicModule,
     RouterModule.forChild(routes)
   ],
-  declarations: [UsuarioinvitadoPage]
+  declarations: [AgregarubicacionPage]
 })
-export class UsuarioinvitadoPageModule {}
+export class AgregarubicacionPageModule {}

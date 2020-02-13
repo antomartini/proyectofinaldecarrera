@@ -14,6 +14,7 @@ import { PostProvider } from 'src/providers/post-provider';
 import { ToastController, NavController } from '@ionic/angular';
 import { AngularFireStorage} from '@angular/fire/storage';
 import { AngularFirestore } from '@angular/fire/firestore';
+import { CargarnotificacionService } from 'src/app/services/cargarnotificacion.service';
 
 // Variable global para las imagenes capturadas
 declare var window: any;
@@ -67,6 +68,11 @@ export class ModificarnotificacionPage implements OnInit {
   }
   loading: boolean = false;
 
+
+  datosnotificaciones: any;
+
+  idnotificacion: any;
+
   constructor(public geolocation: Geolocation,
               private camera: Camera,
               private dataService: DataService,
@@ -76,7 +82,8 @@ export class ModificarnotificacionPage implements OnInit {
               public navCtrl: NavController,
               public stora: Storage,
               private afs: AngularFirestore,
-              private storage: AngularFireStorage
+              private storage: AngularFireStorage,
+              private cargarNotif: CargarnotificacionService
               ) {
 
                 this.stora.get('inicio_sesion').then((val) => {
@@ -107,33 +114,37 @@ export class ModificarnotificacionPage implements OnInit {
 }
 
   ngOnInit() {
-    // Opciones de Notificaciones
-    this.componentes = this.dataService.getNotificacionesOpts();
-  }
+    this.notificacionService.customLatitudNueva.subscribe(msg => this.lat = msg);
+    this.notificacionService.customLongitudNueva.subscribe(msg => this.lon = msg);
+    this.cargarNotif.customIdnotificacion.subscribe(msg => this.idnotificacion = msg);
+    console.log("ID: ", this.idnotificacion);
 
-  // Obtener ubicacion del Usuario
-  agregarUbicacionActual() {
-    this.geolocation.getCurrentPosition().then((geoposition: Geoposition)=>{
-      this.lat = geoposition.coords.latitude;
-      this.lon = geoposition.coords.longitude;
-      console.log(geoposition.coords.latitude);
-      console.log(geoposition.coords.longitude);
-    }).catch((error) => {
-      console.log('Error getting location', error);
-    });
+    const body = {
+      id: this.idnotificacion,
+      aksi: 'cargardatosnotificacion'
+    };
+
+    const provider: Observable <any> = this.postPvdr.postData(body, '/index.php');
+
+    provider.subscribe(
+      async data => {
+        const json = JSON.parse(data);
+        this.datosnotificaciones = json.result;
+        console.log("arreglo: ", this.datosnotificaciones);
+        this.lat = this.datosnotificaciones[0].lat;
+        this.lon = this.datosnotificaciones[0].lon;
+        this.fecha_creacion = this.datosnotificaciones[0].fecha_creacion;
+        this.descripcion = this.datosnotificaciones[0].descripcion;
+        });
   }
 
   // Obtener ubicacion del Usuario
   agregarOtraUbicacion() {
-    this.navCtrl.navigateForward('/caminonuevo');
+    this.navCtrl.navigateForward('/modificarubicacion');
   }
 
   // Cuando se inicializa la vista, se inicializa el mapa
   ionViewWillEnter() {
-  this.notificacionService.customLatitudNueva.subscribe(msg => this.lat = msg);
-  this.notificacionService.customLongitudNueva.subscribe(msg => this.lon = msg);
-  console.log('Se agrego otra ubicacion: ', this.lat);
-  console.log('Se agrego otra ubicacion: ', this.lon);
   }
 
   
@@ -263,80 +274,32 @@ export class ModificarnotificacionPage implements OnInit {
   } // Fin de la funcion
 
 
-  tipoNotificacion(ruta: string) {
-     if (ruta === '/estadocamino') {
-      this.tipo_notificacion = 2;
-     } else if (ruta === '/caminonuevo') {
-       this.tipo_notificacion = 1;
-     } else { this.tipo_notificacion = 3; }
-     console.log(this.tipo_notificacion);
- } // fin de funcion
+  
+
+ async actualizarNotificacion() {
 
 
- async crearNotificacion() {
-
-  // Valor de la notificacion creada depende del tipo
-  this.notificacionService.customEstado.subscribe(msg => this.estado = msg);
-  console.log(this.estado);
-  this.notificacionService.customAfectacion.subscribe(msg => this.afectacion = msg);
-  console.log(this.afectacion);
-  this.notificacionService.customLatitudNueva.subscribe(msg => this.lat_desembocadura = msg);
-  console.log(this.lat_desembocadura);
-  this.notificacionService.customLongitudNueva.subscribe(msg => this.lon_desembocadura = msg);
-
-  // Descripcion de la notificacion
-  console.log(this.descripcion);
-
+  this.cargarNotif.customIdnotificacion.subscribe(msg => this.idnotificacion = msg);
+  console.log("id a modificar: ", this.idnotificacion);
   // Validacion de los campos
 
-  if (this.fecha_creacion === undefined) {
-      const toast = await this.toastCtrl.create({
-        message: 'El campo de fecha es requerido',
-        duration: 3000
-      });
-      toast.present();
-  } else if ( this.lat === null || this.lon === null ) {
-      const toast = await this.toastCtrl.create({
-        message: 'La ubicacion es requerida',
-        duration: 3000
-      });
-      toast.present();
-  } else if ( this.imagen === null ) {
-      const toast = await this.toastCtrl.create({
-        message: 'La imagen es requerida para crear la notificación',
-        duration: 3000
-      });
-      toast.present();
-  } else if ( this.estado === '' ) {
-    const toast = await this.toastCtrl.create({
-      message: 'Se debe seleccionar un tipo de notificacion',
-      duration: 3000
-    });
-    toast.present();
-} else {
-    console.log(this.imagen);
-    const body = {
+  console.log(this.imagen);
+  const body = {
+      id_notificacion: this.idnotificacion,
       fecha_creacion: this.fecha_creacion,
       lon: this.lon,
       lat: this.lat,
       imagen: this.imagen,
       descripcion: this.descripcion,
-      tipo_notificacion: this.tipo_notificacion,
-      estado: this.estado,
-      afectacion: this.afectacion,
-      usuario: this.usuario,
-      lon_desembocadura: this.lon_desembocadura,
-      lat_desembocadura: this.lat_desembocadura,
-      aksi: 'notificacionnueva'
+      aksi: 'actualizarnotificacion'
     };
 
-    const provider: Observable <any> = this.postPvdr.postData(body, '/index.php');
+  const provider: Observable <any> = this.postPvdr.postData(body, '/index.php');
 
-    provider.subscribe(
+  provider.subscribe(
       async data => {
           console.log('Se subscribio');
           if ( data !== null) {
-            this.navCtrl.navigateRoot(['/paginaprincipal']);
             const toast = await this.toastCtrl.create({
               message: 'Creacion Exitosa',
               duration: 3000
@@ -353,7 +316,7 @@ export class ModificarnotificacionPage implements OnInit {
           }
         });
 
-  }
+  
 }
 
 uploadImage(event) {
