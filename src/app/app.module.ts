@@ -1,3 +1,5 @@
+import { SQLite } from '@ionic-native/sqlite/ngx';
+
 
 // Servicios creados
 import { NotificacionesService } from './services/notificaciones.service';
@@ -43,6 +45,7 @@ import { AngularFirestore } from '@angular/fire/firestore';
 import { Facebook } from '@ionic-native/facebook/ngx';
 import { Network } from '@ionic-native/network/ngx';
 
+
 @NgModule({
   declarations: [
     AppComponent
@@ -62,10 +65,11 @@ import { Network } from '@ionic-native/network/ngx';
     AngularFireModule.initializeApp(environment.firebase),
     AngularFireAuthModule,
     AngularFireDatabaseModule,
-    AngularFireStorageModule
+    AngularFireStorageModule,
   ],
   providers: [
     StatusBar,
+    SQLite,
     Network,
     SplashScreen,
     SocialSharing,

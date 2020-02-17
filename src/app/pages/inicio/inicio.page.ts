@@ -1,3 +1,5 @@
+import { PostProvider } from './../../../../../src/providers/post-provider';
+import { Observable } from 'rxjs';
 import { Component, OnInit } from '@angular/core';
 import { NavController } from '@ionic/angular';
 import { CargarnotificacionService } from 'src/app/services/cargarnotificacion.service';
@@ -20,7 +22,8 @@ export class InicioPage implements OnInit {
   constructor(public navCtrl: NavController,
               public notificaciones: CargarnotificacionService,
               public facebook: Facebook,
-              public googlePlus: GooglePlus) {
+              public googlePlus: GooglePlus
+          ) {
                 this.notificaciones.changeNotificaciones();
               }
 
@@ -40,6 +43,12 @@ export class InicioPage implements OnInit {
 
     usuarioinvitado() {
       this.navCtrl.navigateRoot('/usuarioinvitado');
+
+      const body = {
+        aksi: 'conexion'
+      };
+
+     
     }
 
     ingresarFacebook() {

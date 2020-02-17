@@ -5,7 +5,7 @@ import { Platform, ToastController } from '@ionic/angular';
 import { Observable, fromEvent, merge, of, BehaviorSubject } from 'rxjs';
 import { mapTo } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
-
+import { SQLite, SQLiteObject } from '@ionic-native/sqlite/ngx';
 @Injectable({
   providedIn: 'root'
 })
@@ -18,7 +18,8 @@ export class ConexionService {
         private platform: Platform,
         private http: HttpClient,
         private postPvdr: PostProvider,
-        public toastCtrl: ToastController) {
+        public toastCtrl: ToastController,
+        private sqlite: SQLite) {
 
         if (this.platform.is('cordova')) {
             // on Device
@@ -43,7 +44,7 @@ export class ConexionService {
             this.online.subscribe((isOnline) =>{
                 if (isOnline) {
                     this.hasConnection.next(true);
-                  console.log('network was connected :-)');
+                    console.log('network was connected :-)');
                 } else {
                     console.log('network was disconnected :-(');
                     this.hasConnection.next(false);
@@ -52,15 +53,47 @@ export class ConexionService {
               });
         }
         this.testNetworkConnection();
+
+        // SQL LITE
+        this.initializeDatabase();
     }
 
+    // Base de Datos
+    private database: SQLiteObject;
+
+    // Notificaciones a cargar
     private notificaciones = new Array <any> (0);
+
+    private async initializeDatabase() {
+        // Crear Base de Datos
+        this.sqlite.create({
+          name: 'Offline',
+          location: 'default',
+          key: 'password'
+        }).then((db: SQLiteObject) => {
+          this.database = db;
+          db.executeSql(
+            // tslint:disable-next-line: max-line-length
+            'CREATE TABLE IF NOT EXISTS Notificaciones(fecha_creacion, lon, lat, imagen, descripcion,tipo_notificacionestado,afectacion,usuario,lon_desembocadura,lat_desembocadura, aksi)', [])
+            .then(() => console.log('Successfully created software table.'))
+              .catch(e => console.log(e));
+          }).catch(e => console.log(e));
+    }
 
     public agregarNotificacion(notificacion: any): void {
         this.notificaciones.push(notificacion);
-    }
 
-    public cargarNotificaciones(): void {
+          // Insertar datos en la base de datos local :
+        this.database.transaction((tx) => {
+        // tslint:disable-next-line: max-line-length
+        tx.executeSql("INSERT INTO Notificaciones(fecha_creacion, lon, lat, imagen, descripcion,tipo_notificacionestado,afectacion,usuario,lon_desembocadura,lat_desembocadura, aksi)', [])", 
+        // tslint:disable-next-line: max-line-length
+        [notificacion.fecha_creacion, notificacion.lon, notificacion.lat, notificacion.imagen, notificacion.descripcion,notificacion.tipo_notificacionestado,notificacion.afectacion,notificacion.usuario,notificacion.lon_desembocadura,notificacion.lat_desembocadura, notificacion.aksi], (tx, result) => {
+            console.log('insertId: ' + result.insertId);  // New Id number
+            console.log('rowsAffected: ' + result.rowsAffected);  // 1
+        });
+        });
+
         let isConnected = false;
         this.getNetworkStatus().subscribe((connected: boolean) => {
             isConnected = connected;
@@ -69,34 +102,41 @@ export class ConexionService {
                 console.log('Por favor enciende tu conexión a Internet');
             } else {
               console.log('¡CONECTADO!');
-              for (const notificacion in this.notificaciones) {
-                const provider: Observable <any> = this.postPvdr.postData(notificacion, '/index.php');
-    
-                provider.subscribe(
-                 async data => {
-                     console.log('Se subscribio');
-                     if ( data !== null) {
-                       const toast = await this.toastCtrl.create({
-                         message: 'Creacion Exitosa',
-                         duration: 3000
-                       });
-                       console.log(data);
-                       toast.present();
-                     } else {
-                       const toast = await this.toastCtrl.create({
-                         message: 'La creacion de la notificación falló',
-                         duration: 3000,
-                       });
-                       console.log(data);
-                       toast.present();
-                     }
-                   });
-                }
-            this.notificaciones = new Array <any> (0);
-
             }
         });
 
+    }
+
+    public cargarNotificaciones(): void {
+
+      this.database.transaction((tx) => {
+        tx.executeSql('SELECT * from Notificaciones', [], (tx, result) => {
+            for (let i = 0; i < result.rows.length; i++) {
+              console.log(result.rows.item(i));
+              // Se extrae una notificación a cargar
+              const provider: Observable <any> = this.postPvdr.postData(result.rows.item(i), '/index.php');
+              provider.subscribe(
+               async data => {
+                   console.log('Se subscribio');
+                   if ( data !== null) {
+                     const toast = await this.toastCtrl.create({
+                       message: 'Creacion Exitosa',
+                       duration: 3000
+                     });
+                     console.log(data);
+                     toast.present();
+                   } else {
+                     const toast = await this.toastCtrl.create({
+                       message: 'La creacion de la notificación falló',
+                       duration: 3000,
+                     });
+                     console.log(data);
+                     toast.present();
+                   }
+                 });
+            }
+          });
+      });
     }
 
 
@@ -118,7 +158,7 @@ export class ConexionService {
             success => {
                 // console.log('Request to Google Test  success', success);
                     this.hasConnection.next(true);
-                return;
+                    return;
             }, error => {
                 // console.log('Request to Google Test fails', error);
                 this.hasConnection.next(false);
@@ -130,8 +170,5 @@ export class ConexionService {
             return;
        }
     }
-
-    
-
 
 }
