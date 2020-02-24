@@ -1,0 +1,34 @@
+[
+    {
+        "icon": "cloud",
+        "name": "Clima",
+        "redirectTo": "/clima"
+    },
+
+    {
+        "icon": "help",
+        "name": "Preguntas Frecuentes",
+        "redirectTo": "/preguntasfrecuentes"
+    },
+
+    {
+        "icon": "book",
+        "name": "Glosario",
+        "redirectTo": "/glosario"
+    },
+
+    {
+        "icon": "share",
+        "name": "Compartir en Redes",
+        "redirectTo": "/"
+    },
+
+    {
+        "icon": "alert",
+        "name": "Recomendaciones",
+        "redirectTo": "/recomendaciones"
+    }
+
+
+
+]

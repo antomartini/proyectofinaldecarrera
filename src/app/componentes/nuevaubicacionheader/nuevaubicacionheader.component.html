@@ -1,0 +1,14 @@
+<ion-header>
+      <ion-toolbar>
+        <ion-buttons slot="start">
+          <ion-back-button defaultHref="/"></ion-back-button>
+        </ion-buttons>
+        <!-- Botón de confirmar ubicación -->
+        <ion-button expand="full" fill="outline" (click)="confirmarUbicacion()">
+                CONFIRMAR UBICACIÓN
+        </ion-button>
+        <ion-item>
+            <ion-label>Latitud: {{latitudnotif}}, Longitud: {{longitudnotif}}</ion-label>
+        </ion-item>
+      </ion-toolbar>
+    </ion-header>

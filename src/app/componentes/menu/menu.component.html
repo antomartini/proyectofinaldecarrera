@@ -1,0 +1,23 @@
+<!--   
+  side=start lo coloca en el comienzo
+  menuId es un identificador unico para este menu -->
+  <!-- Menu: must have a "content" element to listen for drag events on. -->
+  <ion-menu side="start" menuId="primerMenu" contentId="principal">
+      <ion-header>
+        <ion-toolbar color="primary">
+          <ion-title>Menu principal</ion-title>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content>
+        <ion-list>
+
+          <ion-item *ngFor="let c of componentes | async" 
+                    [routerLink] = "c.redirectTo">
+                    <ion-icon [name]="c.icon"></ion-icon>
+                    <ion-label>{{ c.name }}</ion-label>
+          </ion-item>
+          <ion-toggle color="dark"> Tipo de Vista </ion-toggle>
+
+        </ion-list>
+      </ion-content>
+  </ion-menu>

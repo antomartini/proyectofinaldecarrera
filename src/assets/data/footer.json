@@ -1,0 +1,26 @@
+[
+    {
+        "icon": "map",
+        "name": "Página Principal",
+        "redirectTo": "/paginaprincipal"
+    },
+
+    {
+        "icon": "list",
+        "name": "Historial",
+        "redirectTo": "/historial"
+    },
+
+    {
+        "icon": "pin",
+        "name": "Notificación",
+        "redirectTo": "/creacionnotificacion"
+    },
+
+    {
+        "icon": "Person",
+        "name": "Usuario",
+        "redirectTo": "/perfilusuario"
+    }
+
+]

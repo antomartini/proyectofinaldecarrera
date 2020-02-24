@@ -1,0 +1,55 @@
+<app-header titulo="PERFIL DE USUARIO"> </app-header>
+
+<ion-content>
+
+  <ion-list>
+
+    <ion-item>
+      <ion-label> Nombre: </ion-label>
+      <ion-input [(ngModel)]='nombre'></ion-input>
+    </ion-item>
+
+    <ion-item>
+    <ion-label> Apellido:</ion-label>
+    <ion-input [(ngModel)]='apellido'></ion-input>
+  </ion-item>
+
+    <ion-item>
+      <ion-label>Correo Electrónico:</ion-label>
+      <ion-input [(ngModel)]='correoelectronico'></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>Contraseña:</ion-label>
+      <ion-input [(ngModel)]='password'></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>Fecha de Nacimiento:</ion-label>
+      <ion-input [(ngModel)]='fechanacimiento'></ion-input>
+    </ion-item>
+    
+    <ion-item>
+      <ion-label>Actividad Económica:</ion-label>
+      <ion-input [(ngModel)]='actividadeconomica'></ion-input>
+    </ion-item>
+        
+    <ion-item>
+      <ion-label>Departamento: </ion-label>
+      <ion-input [(ngModel)]='departamento'></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>Localidad:</ion-label>
+      <ion-input [(ngModel)]='localidad'></ion-input>
+    </ion-item>
+
+                
+  
+</ion-list>
+
+  <ion-button expand="block" (click)=" modificarDatosUsuario()">MODIFICAR PERFIL</ion-button> 
+  <ion-button expand="block" (click)="cerrarSesion()">CERRAR SESION</ion-button>
+</ion-content>
+
+<app-footer></app-footer>

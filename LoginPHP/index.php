@@ -16,18 +16,12 @@ $sqlnotificaciones = "SELECT * FROM Notificacion WHERE estado = '1'";
 $resultadonotificaciones = $conexion->query($sqlnotificaciones);
 
 while ($data = mysqli_fetch_array($resultadonotificaciones)) {
-	//$today = date('Y-m-d', strtotime(str_replace('-', '/', $today)));
 	$fecha = date('Y-m-d', strtotime(str_replace('-', '/', $data['fecha_creacion'])));
-	$diferencia = "SELECT DATEDIFF($today, $today)";
-	$sqldiferencia = $conexion->query($diferencia);
-	$tiempovida = mysqli_fetch_array($sqldiferencia);
 
 	// Obtenemos la diferencia en milisegundos
 	$diff = abs(strtotime($today) - strtotime($fecha));
 	$years = floor($diff / (365*60*60*24));
 	$months = floor(($diff - $years * 365*60*60*24) / (30*60*60*24));
-	// Obtenemos la diferencia en milisegundos
-	//$diff = abs(strtotime($today) - strtotime($fecha));
 	$tiempovida = floor(($diff - $years * 365*60*60*24 - $months*30*60*60*24)/ (60*60*24));
 	
 	// Es ESTADO
@@ -35,7 +29,7 @@ while ($data = mysqli_fetch_array($resultadonotificaciones)) {
 	 	$notificacion = "SELECT * FROM Estado WHERE id_notificacion = '$data[id_notificacion]'";
 	 	$sqlnotif = $conexion->query($notificacion);
 
-		if ($tiempovida == 60) {
+		if ($tiempovida == 20) {
 			$queryNotificacion = "UPDATE Notificacion SET estado='0'
 			 				WHERE id_notificacion = '$data[id_notificacion]'";
 			$resultadonotificacion = $conexion->query($queryNotificacion); 
@@ -43,7 +37,7 @@ while ($data = mysqli_fetch_array($resultadonotificaciones)) {
 			WHERE id_notificacion = '$data[id_notificacion]'";
 			$resultadonotificacion = $conexion->query($queryNotificacion);
 		} else {
-			$tiempovida = 60 - $tiempovida;
+			$tiempovida = 20 - $tiempovida;
 			$queryNotificacion = "UPDATE Estado SET tiempo_vida='$tiempovida'
 			WHERE id_notificacion = '$data[id_notificacion]'";
 			$resultadonotificacion = $conexion->query($queryNotificacion); 
@@ -104,10 +98,15 @@ if($postjson['aksi']=='register'){
 		$extraido= mysqli_fetch_array($resultadoid);
 
 		// Se inserta en la Tabla Login de Usuario 
-		$sqllogin = "INSERT INTO Login (usuario, password, id_usuario_reg, estado_activo) VALUES ('$usuario','$password','$extraido[id_usuario_reg]','1')";
+		$sqllogin = "INSERT INTO Login (usuario, password, id_usuario_reg) VALUES ('$usuario','$password','$extraido[id_usuario_reg]')";
 		//Se ejecuta el INSERT en la BD
 		$resultadologin = $conexion->query($sqllogin);	
 
+		// Se inserta en la tabla de Inicion de Sesion
+		$sqlinicio = "INSERT INTO IniciodeSesion (id_usuario_reg, nombre_usuario, fecha_inicio, estado_usuario, id_sistema) VALUES ('$extraido[id_usuario_reg]','$usuario','$today',1,1)";
+		//Se ejecuta el INSERT en la BD
+		$resultadoinicio = $conexion->query($sqlinicio);
+			
 		// Se crea el Historial de Notificaciones para el usuario
 		$sqlHistorial = "INSERT INTO HistorialdeNotificaciones (fecha_actualizacion, cant_notificaciones, id_usuario_reg, usuario) VALUES ('$today','0','$extraido[id_usuario_reg]', '$usuario')";
 		// Se ejecuta el INSERT en la BD
@@ -125,6 +124,11 @@ if($postjson['aksi']=='register'){
 
 		echo $result;
 	}
+
+	//Registro de Usuario
+	$sqlusuario = "INSERT INTO Usuario (usuario_reg,id_sistema) VALUES (1,1) ";
+	//Se ejecuta el INSERT en la BD
+	$resultadousuario = $conexion->query($sqlusuario);
 
 }
 
@@ -215,6 +219,7 @@ elseif($postjson['aksi']=="login"){
   $consulta = "SELECT * FROM Login WHERE usuario='$postjson[usuario]' AND password='$postjson[password]'";
   $resultado = $conexion->query($consulta);
   $filas = $resultado->num_rows;
+  $us = mysqli_fetch_array($resultado);
 
   if($filas>0){
 	$data = mysqli_fetch_array($resultado);
@@ -225,6 +230,7 @@ elseif($postjson['aksi']=="login"){
 	);
 	$result = json_encode(array('success'=>true, 'result'=>$datauser, 'msg'=>'INICIO DE SESION', 'inicio'=>'1'));
 
+	
 	// Cambiar el estado del usuario: en sesion = 1, inactivo = 0
 	$cambiar_estado = "UPDATE Login SET estado_activo = 1 WHERE usuario='$postjson[usuario]'";
 	$estado_cambiado = $conexion->query($cambiar_estado);
@@ -232,6 +238,19 @@ elseif($postjson['aksi']=="login"){
   }else{
 	$result = json_encode(array('success'=>false, 'msg'=>'Cuenta no registrada'));
   }
+  	//Registro de Usuario
+	$sqlusuario = "INSERT INTO Usuario (usuario_reg,id_sistema) VALUES (1,1) ";
+	//Se ejecuta el INSERT en la BD
+	$resultadousuario = $conexion->query($sqlusuario);
+	
+
+	// Cambiar el estado del usuario: en sesion = 1, inactivo = 0
+	$cambiar_estado = "UPDATE IniciodeSesion SET estado_usuario = 1 WHERE nombre_usuario='$postjson[usuario]'";
+	$estadocambiado = $conexion->query($cambiar_estado);
+	
+	$cambiar_estado = "UPDATE IniciodeSesion SET fecha_inicio = '$today' WHERE nombre_usuario='$postjson[usuario]'";
+	$estadocambiado = $conexion->query($cambiar_estado);
+	
 
   echo $result;
  } 
@@ -240,10 +259,12 @@ elseif($postjson['aksi']=="login"){
  elseif($postjson['aksi']=="cerrarsesion"){
 
    // Cambiar el estado del usuario: en sesion = 1, inactivo = 0
-	$cambiar_estado = "UPDATE Login SET estado_activo = 0 WHERE usuario='$postjson[usuario]'";
+	$cambiar_estado = "UPDATE IniciodeSesion SET estado_usuario = 0 WHERE nombre_usuario='$postjson[usuario]'";
 	$estadocambiado = $conexion->query($cambiar_estado);
-	//$filas = $estadocambiado->num_rows;
- 
+	
+	$cambiar_estado = "UPDATE IniciodeSesion SET fecha_cierre = '$today' WHERE nombre_usuario='$postjson[usuario]'";
+	$estadocambiado = $conexion->query($cambiar_estado);
+
    if(!empty($estadocambiado)){
 	$result = json_encode(array('success'=>true, 'msg'=>'INICIO DE SESION', 'inicio'=>'1'));
     } else {
@@ -293,14 +314,14 @@ elseif ($postjson['aksi']=='notificacionnueva') {
 	} elseif ($tipo_notificacion == '2') {
 		// Estado
 		$sqlestado = "INSERT INTO Estado (id_notificacion,tipo_notificacion,tiempo_vida) 
-						VALUES ('$extraido[id_notificacion]','$estado','60')";
+						VALUES ('$extraido[id_notificacion]','$estado','30')";
 		//Se ejecuta el INSERT en la BD
 		$resultadoestado = $conexion->query($sqlestado);	
 
 	} else {
 		//Afectacion
 		$sqlestado = "INSERT INTO Afectacion (id_notificacion,tipo_afectacion,tiempo_vida) 
-						VALUES ('$extraido[id_notificacion]','$afectacion','60')";
+						VALUES ('$extraido[id_notificacion]','$afectacion','30')";
 		//Se ejecuta el INSERT en la BD
 		$resultadoestado = $conexion->query($sqlestado);
 	}
@@ -437,13 +458,23 @@ elseif($postjson['aksi']=="leernotificacion"){
 			$resultadonotif = $conexion->query($consultanotif);
 			$notif = mysqli_fetch_array($resultadonotif);
 			$notiftipo = $notif ['tipo_afectacion'];
-		  } 
+		  } else {
+			$consultanotif = "SELECT * FROM CaminoNuevo WHERE id_notificacion ='$data[id_notificacion]'";
+			$resultadonotif = $conexion->query($consultanotif);
+			$notif = mysqli_fetch_array($resultadonotif);
+			$notiftipo = $notif ['id_notificacion'];
+		  }
+		}
 
-	}
+	
+	$consultaValor = "SELECT valor_notificacion FROM Valoracion WHERE id_notificacion='$postjson[id]'";
+	$resultadovalor = $conexion->query($consultaValor);
+	$valoracion = mysqli_fetch_array($resultadovalor);
 		
 	  $result = json_encode(array('success'=>true, 
 	  			'usuario'=>$usuario['usuario'],   
 				'result'=>$notificaciones , 
+				'valor'=>$valoracion,
 				'notificacion'=>$notiftipo ,
 				'msg'=>'Extraidos'));
   
@@ -508,8 +539,65 @@ elseif($postjson['aksi']=="comentarnotificacion"){
 						 WHERE id_notificacion = '$id_notificacion' "; 
 	$resultadovalor = $conexion->query($queryvaloracion);
 	
-}
+}  elseif($postjson['aksi']=="cargardatosnotificacion"){
 
+	$consultaid = "SELECT * FROM Notificacion WHERE id_notificacion='$postjson[id]'";
+	$resultadoid = $conexion->query($consultaid);
+	$filas = $resultadoid->num_rows;
+
+	if($filas>0){
+	//Crear un arreglo en blanco
+	$notificaciones = array();
+
+	while ($data = mysqli_fetch_array($resultadoid)) {
+	$notificaciones[] = array(
+			'fecha_creacion' => $data['fecha_creacion'],
+	 		'lon' => $data['lon'],
+	 		'lat' => $data['lat'],
+			'imagen' => $data['imagen'],
+			'descripcion' => $data['descripcion'],
+		  );
+
+	}
+		
+	  $result = json_encode(array('success'=>true,  
+				'result'=>$notificaciones , 
+				'msg'=>'Extraidos'));
+  
+	}else{
+	  $result = json_encode(array('success'=>false, 'msg'=>'No se pudo cerrar sesion'));
+	}
+  
+	echo $result; 
+	
+} elseif($postjson['aksi']=="actualizarnotificacion"){
+
+	// Variables para la creacion de una notificacion
+	$fecha_creacion = date('Y/m/d',strtotime($postjson['fecha_creacion']));
+	$lon = mysqli_real_escape_string($conexion,$postjson['lon']);
+	$lat = mysqli_real_escape_string($conexion,$postjson['lat']);
+	$descripcion = mysqli_real_escape_string($conexion,$postjson['descripcion']);
+	$id_notificacion = mysqli_real_escape_string($conexion,$postjson['id_notificacion']);
+
+	$queryvaloracion = "UPDATE Notificacion SET 
+							lon='$lon', 
+							lat='$lat',
+							descripcion='$descripcion',
+							fecha_creacion='$fecha_creacion',
+							fecha_actualizacion='$today'
+						 WHERE id_notificacion = '$id_notificacion' "; 
+	$resultadovalor = $conexion->query($queryvaloracion);
+
+	
+}
+elseif($postjson['aksi']=="conexion"){
+
+	//Registro de Usuario
+	$sqlusuario = "INSERT INTO Usuario (usuario_reg,id_sistema) VALUES (0,1) ";
+	//Se ejecuta el INSERT en la BD
+	$resultadousuario = $conexion->query($sqlusuario);
+	
+}
 
 ?>
 
