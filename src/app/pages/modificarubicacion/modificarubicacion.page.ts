@@ -1,3 +1,4 @@
+import { NotificacionesService } from 'src/app/services/notificaciones.service';
 
 import { Component, OnInit } from '@angular/core';
 import { MenuController, NavController } from '@ionic/angular';
@@ -7,14 +8,14 @@ import { Platform } from '@ionic/angular';
 import { Router } from '@angular/router';
 // Geolocalizacion
 import { Geolocation, Geoposition } from '@ionic-native/geolocation/ngx';
-import { NotificacionesService } from 'src/app/services/notificaciones.service';
+
 
 @Component({
-  selector: 'app-caminonuevo',
-  templateUrl: './caminonuevo.page.html',
-  styleUrls: ['./caminonuevo.page.scss'],
+  selector: 'app-modificarubicacion',
+  templateUrl: './modificarubicacion.page.html',
+  styleUrls: ['./modificarubicacion.page.scss'],
 })
-export class CaminonuevoPage implements OnInit {
+export class ModificarubicacionPage implements OnInit {
 
   componentes: Componente[] = [];
 
@@ -63,6 +64,7 @@ export class CaminonuevoPage implements OnInit {
 
   ngOnInit() {
 
+    
   }
 
   // Para obtener la ubicación actual del usuario
@@ -86,7 +88,7 @@ export class CaminonuevoPage implements OnInit {
     // setView es usada para configurar la vista del mapa
     console.log('Crea el mapa');
     // Ubicacion de Santa Fe
-    this.map = new Map('mapaubicacion').setView([-31.6333294, -60.7000008], 25);
+    this.map = new Map('mapaubicacionnueva').setView([-31.6333294, -60.7000008], 25);
     tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
     }).addTo(this.map);
@@ -113,12 +115,12 @@ export class CaminonuevoPage implements OnInit {
     console.log(e.latlng);
 
     // Agregar ubicacion
-    this.notificacionService.changeCaminoNuevo(this.latitudnotif, this.longitudnotif);
+    this.notificacionService.changeUbicacionNueva(this.latitudnotif, this.longitudnotif);
   }
 
   // Confirmar ubicacion seleccionada
   confirmarUbicacion() {
-    this.navCtrl.navigateRoot('\creacionnotificacion');
+    this.navCtrl.navigateBack('\modificarnotificacion');
     console.log('Ya hizo click');
   }
 
@@ -141,7 +143,4 @@ export class CaminonuevoPage implements OnInit {
   }
 
 
-
 }
-
-

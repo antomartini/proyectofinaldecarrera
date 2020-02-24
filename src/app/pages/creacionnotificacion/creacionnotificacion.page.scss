@@ -5,3 +5,15 @@ ion-item {
 ion-tab-bar {
     --border: transparent;
 }
+
+.subir{
+    padding: 5px 10px;
+    color: #1a8e55;
+    border: 2px solid #1a8e55;
+    margin: 75px; 
+}
+ 
+.subir:hover{
+    color: #1a8e55;
+    background: #ffffff;
+}

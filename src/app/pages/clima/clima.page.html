@@ -1,7 +1,46 @@
-<app-header titulo="CLIMA"></app-header>
+<app-header titulo="Clima"></app-header>
+        <div *ngIf="weather">
+          <ion-item>
+            <ion-label>
+              <ion-icon name="home" slot="start"></ion-icon>
+              Ciudad: {{weather.name}}
+            </ion-label>
+          </ion-item>
 
-<ion-content>
+          <ion-item>
+            <ion-label>
+              <ion-icon name="pin" slot="start"></ion-icon>
+              Latitud: {{weather.coord.lat}}
+            </ion-label>
+          </ion-item>
 
-</ion-content>
+          <ion-item>
+            <ion-label>
+              <ion-icon name="pin" slot="start"></ion-icon>
+              Longitud: {{weather.coord.lon}}
+            </ion-label>
+          </ion-item>
+
+          <ion-item>
+            <ion-label>
+              <ion-icon name="rainy" slot="start"></ion-icon>
+              Humedad: {{weather.main.humidity}}
+            </ion-label>
+          </ion-item>
+
+          <ion-item>
+            <ion-label>
+              <ion-icon name="thermometer" slot="start"></ion-icon>
+              Temperatura: {{weather.main.temp}} °C
+            </ion-label>
+          </ion-item>
+
+          <ion-item>
+            <ion-label>
+              <ion-icon name="thermometer" slot="start"></ion-icon>
+              Presion: {{weather.main.pressure}}
+            </ion-label>
+          </ion-item>
+    </div>
 
 <app-footer></app-footer>

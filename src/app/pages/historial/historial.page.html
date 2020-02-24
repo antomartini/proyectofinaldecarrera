@@ -5,14 +5,11 @@
 <ion-item *ngFor="let notificacion of notificaciones" >
     <ion-text> ID: {{notificacion.id_notificacion}} - CREADA: {{notificacion.fecha_creacion}} </ion-text>
 
-
       <ion-icon fill="outline" slot="end" name="create" (click)= "modificar(notificacion.id_notificacion)"></ion-icon> 
 
       <ion-icon fill="outline" slot="end" name="trash" (click)= "eliminar(notificacion.id_notificacion)"></ion-icon>
     
       <ion-icon fill="outline" slot="end" name="eye" (click)= "visualizarnotificacion(notificacion.id_notificacion)" ></ion-icon>
-
-
 
   </ion-item>
 </ion-content>

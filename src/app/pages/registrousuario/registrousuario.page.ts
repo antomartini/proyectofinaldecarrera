@@ -16,7 +16,7 @@ export class RegistrousuarioPage implements OnInit {
   apellido: string = '';
   usuario: string = '';
   password: string = '';
-  fecha_nacimiento: any = '';
+  fecha_nacimiento =  new Date();
   actividad_economica: string = '';
   confirm_password: string = '';
   localidad: string = '';
@@ -34,93 +34,107 @@ export class RegistrousuarioPage implements OnInit {
     private storage: Storage
   ) { }
 
-  localidadesCastellanos: Array<string> = ['VIRGINIA',
-    'MAUA - Castellanos ',
-    'HUMBERTO 1 - Castellanos ',
-    'RAQUEL - Castellanos',
-    'TACURAÑ - Castellanos',
-    'TACURALES - Castellanos',
-    'COL BICHA - Castellanos',
-    'EUSEBIA - Castellanos',
-    'HUGENTOBLER - Castellanos',
-    'ALDAO - Castellanos',
-    'SUNCHALES - Castellanos',
-    'ATALIVA - Castellanos',
-    'GALISTEO - Castellanos',
-    'LEHMANN - Castellanos',
-    'EGUSTIZA - Castellanos',
-    'BIGAND - Castellanos',
-    'FIDELA - Castellanos',
-    'MARINI - Castellanos',
-    'RAMONA - Castellanos',
-    'FRAGA - Castellanos',
-    'VILA - Castellanos',
-    'COL CASTELLANOS - Castellanos',
-    'PTE ROCA - Castellanos',
-    'RAFAELA - Castellanos',
-    'BELLA ITALIA - Castellanos',
-    'AURELIA - Castellanos',
-    'SUSANA - Castellanos',
-    'VILLA SAN JOSE - Castellanos',
-    'SAGUIER - Castellanos',
-    'SAN ANTONIO - Castellanos',
-    'S C DE SAGUIER - Castellanos',
-    'BAUER Y SIGEL - Castellanos',
-    'JOSEFINA - Castellanos',
-    'CELLO - Castellanos',
-    'CLUCELLAS - Castellanos',
-    'ITURRASPE - Castellanos',
-    'ANGELICA - Castellanos',
-    'EST CLUCELLAS - Castellanos',
-    'EUSTOLIA - Castellanos',
-    'ZENON PEREYRA - Castellanos',
-    'FRONTERA - Castellanos',
-    'ESMERALDA - Castellanos',
-    'GARIBALDI - Castellanos',
-    'MARIA JUANA - Castellanos',
-    'CNIA. MARGARITA - Castellanos',
-    'SAN VICENTE - Castellanos'
+  localidades: Array<string> = ['VIRGINIA',
+  '	ALDAO	- CASTELLANOS	',
+  '	ANGELICA	- CASTELLANOS	',
+  '	ATALIVA	- CASTELLANOS	',
+  '	AURELIA	- CASTELLANOS	',
+  '	BAUER Y SIGEL	- CASTELLANOS	',
+  '	BELLA ITALIA	- CASTELLANOS	',
+  '	BIGAND	- CASTELLANOS	',
+  '	CAVOUR	- LAS COLONIAS	',
+  '	CELLO	- CASTELLANOS	',
+  '	CELLO	- CASTELLANOS	',
+  '	CLUCELLAS	- CASTELLANOS	',
+  '	CNIA. MARGARITA	- CASTELLANOS	',
+  '	COL BICHA	- CASTELLANOS	',
+  '	COL CASTELLANOS	- CASTELLANOS	',
+  '	COL CASTELLANOS	- CASTELLANOS	',
+  '	CULULU	- LAS COLONIAS	',
+  '	EGUSTIZA	- CASTELLANOS	',
+  '	ELISA	- LAS COLONIAS	',
+  '	EMPALME SAN CARLOS	- LAS COLONIAS	',
+  '	ESMERALDA	- CASTELLANOS	',
+  '	ESPERANZA	- LAS COLONIAS	',
+  '	EST CLUCELLAS	- CASTELLANOS	',
+  '	EUSEBIA	- CASTELLANOS	',
+  '	EUSEBIA	- CASTELLANOS	',
+  '	EUSTOLIA	- CASTELLANOS	',
+  '	FELICIA	- LAS COLONIAS	',
+  '	FIDELA	- CASTELLANOS	',
+  '	FRAGA	- CASTELLANOS	',
+  '	FRANCK	- LAS COLONIAS	',
+  '	FRONTERA	- CASTELLANOS	',
+  '	FRONTERA	- CASTELLANOS	',
+  '	GALISTEO	- CASTELLANOS	',
+  '	GARIBALDI	- CASTELLANOS	',
+  '	GRUTLY	- LAS COLONIAS	',
+  '	HIPATIA	- LAS COLONIAS	',
+  '	HUGENTOBLER	- CASTELLANOS	',
+  '	HUMBERTO 1	- CASTELLANOS	',
+  '	HUMBOLT	- LAS COLONIAS	',
+  '	HUMBOLT	- LAS COLONIAS	',
+  '	ITURRASPE	- CASTELLANOS	',
+  '	ITUZAANGO	- LAS COLONIAS	',
+  '	JACINTO L ARAUZ	- LAS COLONIAS	',
+  '	JOSEFINA	- CASTELLANOS	',
+  '	LA PELADA	- LAS COLONIAS	',
+  '	LAS TUNAS	- LAS COLONIAS	',
+  '	LEHMANN	- CASTELLANOS	',
+  '	LEHMANN	- CASTELLANOS	',
+  '	MARIA JUANA	- CASTELLANOS	',
+  '	MARIA JUANA	- CASTELLANOS	',
+  '	MARIA LUISA	- LAS COLONIAS	',
+  '	MARINI	- CASTELLANOS	',
+  '	MATILDE	- LAS COLONIAS	',
+  '	MATILDE	- LAS COLONIAS	',
+  '	MAUA	- CASTELLANOS	',
+  '	NUEVO TORINO	- LAS COLONIAS	',
+  '	PILAR	- LAS COLONIAS	',
+  '	PROGRESO	- LAS COLONIAS	',
+  '	PROVIDENCIA	- LAS COLONIAS	',
+  '	PTE ROCA	- CASTELLANOS	',
+  '	PTE ROCA	- CASTELLANOS	',
+  '	PUJATO NORTE	- LAS COLONIAS	',
+  '	RAFAELA	- CASTELLANOS	',
+  '	RAFAELA	- CASTELLANOS	',
+  '	RAFAELA	- CASTELLANOS	',
+  '	RAFAELA	- CASTELLANOS	',
+  '	RAMONA	- CASTELLANOS	',
+  '	RAQUEL 	- CASTELLANOS	',
+  '	RIVADAVIA	- LAS COLONIAS	',
+  '	S C DE SAGUIER	- CASTELLANOS	',
+  '	SAA PEREYRA	- LAS COLONIAS	',
+  '	SAGUIER	- CASTELLANOS	',
+  '	SAGUIER	- CASTELLANOS	',
+  '	SAN AGUSTIN	- LAS COLONIAS	',
+  '	SAN ANTONIO	- CASTELLANOS	',
+  '	SAN CARLOS CENTRO	- LAS COLONIAS	',
+  '	SAN CARLOS NORTE	- LAS COLONIAS	',
+  '	SAN CARLOS SUR	- LAS COLONIAS	',
+  '	SAN GERONIMO DEL SAUCE	- LAS COLONIAS	',
+  '	SAN GERONIMO NORTE	- LAS COLONIAS	',
+  '	SAN JOSE	- LAS COLONIAS	',
+  '	SAN MARIANO	- LAS COLONIAS	',
+  '	SAN VICENTE	- CASTELLANOS	',
+  '	SAN VICENTE	- CASTELLANOS	',
+  '	SANTO DOMINGO	- LAS COLONIAS	',
+  '	SARMIENTO	- LAS COLONIAS	',
+  '	SOUTOMAYOR	- LAS COLONIAS	',
+  '	STA CLARA DE B VISTA	- LAS COLONIAS	',
+  '	STA MARIA CENTRO	- LAS COLONIAS	',
+  '	STA MARIA NORTE	- LAS COLONIAS	',
+  '	SUNCHALES	- CASTELLANOS	',
+  '	SUSANA	- CASTELLANOS	',
+  '	TACURALES	- CASTELLANOS	',
+  '	TACURAÑ	- CASTELLANOS	',
+  '	VILA	- CASTELLANOS	',
+  '	VILLA SAN JOSE	- CASTELLANOS	',
+  '	VIRGINIA	- CASTELLANOS	',
+  '	ZENON PEREYRA	- CASTELLANOS	',
+  '	ZENON PEREYRA	- CASTELLANOS	',
   ];
 
-  localidadesLasColonias: Array<string> = [
-    'ELISA - Las Colonias ',
-    'JACINTO L ARAUZ - Las Colonias',
-    'LA PELADA - Las Colonias',
-    'ITUZAANGO - Las Colonias',
-    'SOUTOMAYOR - Las Colonias',
-    'PROVIDENCIA - Las Colonias',
-    'MARIA LUISA - Las Colonias',
-    'SANTO DOMINGO - Las Colonias',
-    'PROGRESO - Las Colonias',
-    'HIPATIA - Las Colonias',
-    'SARMIENTO - Las Colonias',
-    'FELICIA - Las Colonias',
-    'GRUTLY - Las Colonias',
-    'RIVADAVIA - Las Colonias',
-    'CULULU - Las Colonias',
-    'ESPERANZA - Las Colonias',
-    'CAVOUR - Las Colonias',
-    'HUMBOLT - Las Colonias',
-    'NUEVO TORINO - Las Colonias',
-    'PILAR - Las Colonias',
-    'STA MARIA CENTRO - Las Colonias',
-    'STA MARIA NORTE - Las Colonias',
-    'SAN GERONIMO NORTE - Las Colonias',
-    'LAS TUNAS - Las Colonias',
-    'PUJATO NORTE - Las Colonias',
-    'FRANCK - Las Colonias',
-    'EMPALME SAN CARLOS - Las Colonias',
-    'SAN JOSE - Las Colonias',
-    'SAN AGUSTIN - Las Colonias',
-    'SAN CARLOS NORTE - Las Colonias',
-    'SAN GERONIMO DEL SAUCE - Las Colonias',
-    'SAN PEREYRA - Las Colonias',
-    'SAN MARIANO - Las Colonias',
-    'STA CLARA DE B VISTA - Las Colonias',
-    'SAN CARLOS CENTRO - Las Colonias',
-    'MATILDE - Las Colonias',
-    'SAN CARLOS SUR - Las Colonias',
-  ];
 
   actividades: Array<string> = [
     'Producción Agrícola',
@@ -148,20 +162,20 @@ export class RegistrousuarioPage implements OnInit {
     'Escuela',
     'Centro de Salud',
     'Comuna'
-  ]
+  ];
 
   ngOnInit() {
-  
+
   // Opciones en el popup de las fechas
     this.customPickerOptions = {
       buttons: [{
         text: 'Guardar',
-        handler: (event) => { 
-        console.log('Clicked Save!');
+        handler: (event) => {
         console.log(event);
-        this.fecha_nacimiento = new Date().setDate(event.day.value);
-        this.fecha_nacimiento = new Date().setFullYear(event.year.value);
-        this.fecha_nacimiento = new Date().setMonth(event.month.value);
+        this.fecha_nacimiento.setDate(event.day.value);
+        this.fecha_nacimiento.setFullYear(event.year.value);
+        this.fecha_nacimiento.setMonth(event.month.value);
+        console.log('Fecha: ', this.fecha_nacimiento);
         }
       }, {
         text: 'Cancelar',
@@ -170,11 +184,11 @@ export class RegistrousuarioPage implements OnInit {
           return false;
         }
       }]
-    }
+    };
   }
-  
 
-  async prosesRegister() {
+
+  async registrarse() {
     // Validacion de los campos
     if (this.usuario === '') {
         const toast = await this.toastCtrl.create({
@@ -246,4 +260,4 @@ export class RegistrousuarioPage implements OnInit {
     }
   }
 
-} // fin de la clase
+} // Fin de la clase

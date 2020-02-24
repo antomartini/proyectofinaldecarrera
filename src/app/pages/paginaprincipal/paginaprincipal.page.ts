@@ -1,5 +1,5 @@
 
-import { Observable } from 'rxjs';
+
 
 import { Component, OnInit } from '@angular/core';
 import { MenuController, ToastController, NavController } from '@ionic/angular';
@@ -12,7 +12,9 @@ import { Router } from '@angular/router';
 import { Geolocation, Geoposition } from '@ionic-native/geolocation/ngx';
 import { PostProvider } from 'src/providers/post-provider';
 import { CargarnotificacionService } from 'src/app/services/cargarnotificacion.service';
+import { Storage } from '@ionic/storage';
 
+import * as L from 'leaflet';
 
 
 @Component({
@@ -67,12 +69,14 @@ export class PaginaprincipalPage implements OnInit {
   address: string[];
 
   // Arreglo de notificaciones a leer
-  notificaciones: Array<any>;
+  notificaciones: any;
 
   notif: null;
 
   banderanotificaciones: boolean = false;
-  
+
+ 
+
   constructor(private menuCtrl: MenuController,
               public plt: Platform,
               public router: Router,
@@ -80,41 +84,35 @@ export class PaginaprincipalPage implements OnInit {
               private postPvdr: PostProvider,
               public toastCtrl: ToastController,
               public navCtrl: NavController,
-              public cargaNotif: CargarnotificacionService) {
+              public cargaNotif: CargarnotificacionService,
+              private storage: Storage) {
 
-              
               // Funcion para obtener todos los datos necesarios al iniciar
-              this.obtenerDatos();
+              // this.obtenerDatos();
+              this.cargaNotif.changeNotificaciones();
+              this.cargaNotif.customNotificaciones.subscribe(msg => this.notificaciones = msg);
+              console.log("Notificaciones: " , this.notificaciones);
+              // GUARDAR DATOS LOCALMENTE
+              this.storage.set('notificaciones', this.notificaciones );
               } // Fin del Constructor
 
   ngOnInit() {
-  }
-
-  cargarNotificaciones() {
-    const body = {
-      aksi: 'visualizarnotificacion'
-    };
-
-    const provider: Observable <any> = this.postPvdr.postData(body, '/index.php');
-
-    provider.subscribe(
-      async data => {
-          const json = JSON.parse(data);
-          this.notificaciones = json.result;
-          console.log('Se subscribio');
-          console.log('Longitud:', this.notificaciones.length);
-          console.log(this.banderanotificaciones);
-          this.banderanotificaciones = true;
-          console.log(this.banderanotificaciones);
-
-      });
+    this.cargaNotif.changeNotificaciones();
+    this.cargaNotif.customNotificaciones.subscribe(msg => this.notificaciones = msg);
 
   }
 
   // Visualizar las notificaciones en pantalla
   leerNotificaciones() {
-    // Lee todas las notificaciones
 
+    if (this.notificaciones === null || this.notificaciones === 0 ) {
+      this.storage.get('notificaciones').then((val) => {
+        console.log('Storage: ', val);
+        this.notificaciones = val; 
+      });
+
+    }
+    // Lee todas las notificaciones
     for (let index = 0; index < this.notificaciones.length; index++) {
       console.log(this.notificaciones[index]);
       let icono: any;
@@ -149,24 +147,54 @@ export class PaginaprincipalPage implements OnInit {
 
  // Forma parte del proceso de IONIC
  ionViewDidEnter() {
-  this.loadMap();  }
+  this.loadMap();
+   }
 
   // Cargar el mapa
   loadMap() {
 
     // Ubicacion de Santa Fe - Se inicializa la ubicación aquí
-    this.map = new Map('map').setView([-31.6333294, -60.7000008], 25);
+    this.map = L.map('map').setView([-31.6333294, -60.7000008], 25);
 
     tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
     { attribution:
       'Map data © <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'})
         .addTo(this.map); // This line is added to add the Tile Layer to our map
-
+    
     // Posicion del usuario
     this.locatePosition();
 
     // Notificaciones
-    // this.leerNotificaciones();
+    this.leerNotificaciones();
+
+    var mbAttr = 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
+            '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+            'Imagery © <a href="http://mapbox.com">Mapbox</a>',
+          mbUrl = 'https://tiles.wmflabs.org/bw-mapnik/{z}/{x}/{y}.png';
+
+    var comun = 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
+          '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+          'Imagery © <a href="http://mapbox.com">Mapbox</a>',
+      Urlcomun = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+
+
+      var Attr = 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
+          '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+          'Imagery © <a href="http://mapbox.com">Mapbox</a>',
+      Url = 'http://www.google.cn/maps/vt?lyrs=s@189&gl=cn&x={x}&y={y}&z={z}';
+
+    var grayscale   = tileLayer(mbUrl, {id: 'map.light', attribution: mbAttr}),
+           satelital = tileLayer(Url, {id: 'map.streets',   attribution: Attr}),
+            standar  = tileLayer(Urlcomun, {id: 'map.streets',   attribution: comun});
+
+        var baseLayers = {
+          "Estandar": standar,
+          "Escala en Grises": grayscale,
+          "Satelital": satelital
+        };
+
+        L.control.layers(baseLayers).addTo(this.map);
+
   }
 
 // Función que se dispara cuando se pulsa sobre el mapa.
@@ -188,23 +216,6 @@ onMarkerClicked(notificacion: any) {
   locatePosition() {
     this.map.locate({setView:true}).on('locationfound',
     (e: any) => this.newMarker = marker([e.latitude, e.longitude], {icon: this.usuario}).addTo(this.map));
-  }
-  // Funcion asincrona para obtener las notificaciones de la bd
-  obtenerNotificaciones(): Promise<any>  {
-    return new Promise(resolve => {
-      setTimeout(() => {
-        resolve (
-          this.cargarNotificaciones()
-        );
-      }, 9000);
-   });
-
- }
-
-  async obtenerDatos() {
-   const msg = await this.obtenerNotificaciones();
-  // this.leerNotificaciones ();
-   console.log("salio");
   }
 
 

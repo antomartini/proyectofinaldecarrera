@@ -13,6 +13,7 @@ import { SocialSharing } from '@ionic-native/social-sharing/ngx';
 })
 export class MenuComponent implements OnInit {
 
+  url: any = 'www.google.com';
   componentes: Observable<Componente[]>;
 
   constructor(private dataService: DataService,
@@ -22,5 +23,17 @@ export class MenuComponent implements OnInit {
     this.componentes = this.dataService.getMenuOpts();
 
   }
+
+  compartir(icon: string) {
+    if (icon == "share") {
+      this.socialSharing.share(
+        'Rural APP',
+        this.url,
+        '',
+        this.url
+      )
+    }
+  }
+
 
 }

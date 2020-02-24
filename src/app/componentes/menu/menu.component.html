@@ -11,12 +11,11 @@
       <ion-content>
         <ion-list>
 
-          <ion-item *ngFor="let c of componentes | async" 
+          <ion-item (click)="compartir(c.icon)" *ngFor="let c of componentes | async" 
                     [routerLink] = "c.redirectTo">
                     <ion-icon [name]="c.icon"></ion-icon>
                     <ion-label>{{ c.name }}</ion-label>
           </ion-item>
-          <ion-toggle color="dark"> Tipo de Vista </ion-toggle>
 
         </ion-list>
       </ion-content>

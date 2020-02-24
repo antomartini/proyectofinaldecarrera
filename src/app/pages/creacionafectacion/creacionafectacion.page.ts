@@ -11,7 +11,7 @@ export class CreacionafectacionPage implements OnInit {
 
   // Tipo de Afectacion creada por el usuario
   afectacion: string;
-
+  icon: string = 'assets/icon/afectaciones.png';
   constructor(public navCtrl: NavController,
               public notificacionesService: NotificacionesService) { }
 

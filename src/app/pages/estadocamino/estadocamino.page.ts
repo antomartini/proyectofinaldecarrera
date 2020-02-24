@@ -9,6 +9,8 @@ import { Component, OnInit, Input, ChangeDetectionStrategy } from '@angular/core
 })
 export class EstadocaminoPage implements OnInit {
 
+  icon = 'assets/icon/estados.png';
+
   public estados = [
     { val: 'BUENO', isChecked: false, 
     texto: 'Es un camino rural en buen estado. Es posible transitarlo sin ningún problema o consecuencia.'},

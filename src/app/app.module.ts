@@ -1,3 +1,6 @@
+import { SQLite } from '@ionic-native/sqlite/ngx';
+
+
 // Servicios creados
 import { NotificacionesService } from './services/notificaciones.service';
 import { DataService } from './services/data.service';
@@ -28,6 +31,8 @@ import { IonicStorageModule } from '@ionic/storage';
 // Llamar a Modo Produccion
 enableProdMode();
 
+import { GooglePlus } from '@ionic-native/google-plus/ngx';
+
 // environment
 import { environment } from '../environments/environment';
 
@@ -37,6 +42,9 @@ import { AngularFireAuthModule } from '@angular/fire/auth';
 import { AngularFireDatabaseModule } from '@angular/fire/database';
 import { AngularFireStorageModule, AngularFireStorage } from '@angular/fire/storage';
 import { AngularFirestore } from '@angular/fire/firestore';
+import { Facebook } from '@ionic-native/facebook/ngx';
+import { Network } from '@ionic-native/network/ngx';
+
 
 @NgModule({
   declarations: [
@@ -57,14 +65,18 @@ import { AngularFirestore } from '@angular/fire/firestore';
     AngularFireModule.initializeApp(environment.firebase),
     AngularFireAuthModule,
     AngularFireDatabaseModule,
-    AngularFireStorageModule
+    AngularFireStorageModule,
   ],
   providers: [
     StatusBar,
+    SQLite,
+    Network,
     SplashScreen,
     SocialSharing,
     PostProvider,
     DataService,
+    Facebook,
+    GooglePlus,
     NotificacionesService,
     Camera,
     AngularFireStorage,

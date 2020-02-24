@@ -43,7 +43,7 @@ export class NotificacionPage implements OnInit {
 
   extraerNotificacion() {
 
-    console.log('id cuando va a leer: ',this.idnotificacion);
+    console.log('id cuando va a leer: ', this.idnotificacion);
     const body = {
       id: this.idnotificacion,
       aksi: 'leernotificacion'
@@ -59,26 +59,14 @@ export class NotificacionPage implements OnInit {
         this.notificacioncargada = dataconver.result;
         this.usuario = dataconver.usuario;
         this.notificaciontipo = dataconver.notificacion;
-        if ( dataconver.registro === '1') {
-            const toast = await this.toastCtrl.create({
-              message: 'Creacion Exitosa',
-              duration: 3000
-            });
-          } else {
-            const toast = await this.toastCtrl.create({
-              message: 'La creacion de la notificación falló',
-              duration: 3000,
-            });
-            this.imagen = this.notificacioncargada[0].imagen;
-            this.descripcion = this.notificacioncargada[0].descripcion;
-            this.idnotificacion = this.notificacioncargada[0].idnotificacion;
-            this.fechacreacion = this.notificacioncargada[0].fechacreacion;
-            this.lon = this.notificacioncargada[0].lon;
-            this.lat = this.notificacioncargada[0].lat;
-            this.imagen = this.notificacioncargada[0].imagen;
-            this.tiponotificacion = this.notificacioncargada[0].tiponotificacion;
-            toast.present();
-          }
+        this.imagen = this.notificacioncargada[0].imagen;
+        this.descripcion = this.notificacioncargada[0].descripcion;
+        this.idnotificacion = this.notificacioncargada[0].idnotificacion;
+        this.fechacreacion = this.notificacioncargada[0].fechacreacion;
+        this.lon = this.notificacioncargada[0].lon;
+        this.lat = this.notificacioncargada[0].lat;
+        this.imagen = this.notificacioncargada[0].imagen;
+        this.tiponotificacion = this.notificacioncargada[0].tiponotificacion;
         });
 
   } // Fin de la funcion
@@ -134,7 +122,7 @@ export class NotificacionPage implements OnInit {
     provider.subscribe(
       async data => {
         const dataconver = JSON.parse(data);
-        console.log("data:", dataconver);
+        console.log('data:', dataconver);
         this.comentarios = dataconver.result;
         console.log(this.comentarios);
         if ( dataconver.registro === '1') {
@@ -142,18 +130,30 @@ export class NotificacionPage implements OnInit {
               message: 'Creacion Exitosa',
               duration: 3000
             });
-          } else {
+          }
+        });
+  }
+
+  valorar() {
+    console.log(this.valor);
+    this.cargarNotif.customIdnotificacion.subscribe(msg => this.idnotificacion = msg);
+    console.log('id: ', this.idnotificacion);
+    const body = {
+      id: this.idnotificacion,
+      valor: this.valor,
+      aksi: 'valorar'
+    };
+
+    const provider: Observable <any> = this.postPvdr.postData(body, '/index.php');
+
+    provider.subscribe(
+      async data => {
             const toast = await this.toastCtrl.create({
-              message: 'La creacion de la notificación falló',
-              duration: 3000,
+              message: '¡Tu valoraciòn se guardo!',
+              duration: 3000
             });
             toast.present();
-          }
-
         });
-
-
-
   }
 
 }

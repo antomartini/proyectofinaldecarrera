@@ -19,8 +19,7 @@
 
     {
         "icon": "share",
-        "name": "Compartir en Redes",
-        "redirectTo": "/"
+        "name": "Compartir en Redes"
     },
 
     {

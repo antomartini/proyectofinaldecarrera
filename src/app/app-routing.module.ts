@@ -20,6 +20,8 @@ const routes: Routes = [
   { path: 'caminonuevo', loadChildren: './pages/caminonuevo/caminonuevo.module#CaminonuevoPageModule' },
   { path: 'modificarnotificacion', loadChildren: './pages/modificarnotificacion/modificarnotificacion.module#ModificarnotificacionPageModule' },
   { path: 'usuarioinvitado', loadChildren: './pages/usuarioinvitado/usuarioinvitado.module#UsuarioinvitadoPageModule' },
+  { path: 'modificarubicacion', loadChildren: './pages/modificarubicacion/modificarubicacion.module#ModificarubicacionPageModule' },
+  { path: 'agregarubicacion', loadChildren: './pages/agregarubicacion/agregarubicacion.module#AgregarubicacionPageModule' },
 ];
 
 @NgModule({

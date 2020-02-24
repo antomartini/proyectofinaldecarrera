@@ -14,6 +14,9 @@ import { PostProvider } from 'src/providers/post-provider';
 import { ToastController, NavController } from '@ionic/angular';
 import { AngularFireStorage} from '@angular/fire/storage';
 import { AngularFirestore } from '@angular/fire/firestore';
+import { ConexionService } from 'src/app/services/conexion.service';
+
+
 
 // Variable global para las imagenes capturadas
 declare var window: any;
@@ -29,6 +32,8 @@ export interface Image {
   styleUrls: ['./creacionnotificacion.page.scss'],
 })
 
+
+
 export class CreacionnotificacionPage implements OnInit {
 
 // Para elegir las diferentes opciones de notificacion
@@ -36,8 +41,8 @@ export class CreacionnotificacionPage implements OnInit {
   componentes: Observable<Componente[]>;
 
    // Posicion del usuario
-   lat: number = null;
-   lon: number = null;
+   lat: number = 0;
+   lon: number = 0;
    // Imagen a capturar / galeria
    imagen: any;
 
@@ -57,7 +62,7 @@ export class CreacionnotificacionPage implements OnInit {
 
   // Fecha
   customPickerOptions: any;
-  fecha_creacion: any;
+  fecha_creacion= new Date();
 
   // Usuario que crea las notificaciones
   usuario: string;
@@ -68,6 +73,10 @@ export class CreacionnotificacionPage implements OnInit {
   }
   loading: boolean = false;
 
+  img: any;
+
+  isConnected = false;
+
   constructor(public geolocation: Geolocation,
               private camera: Camera,
               private dataService: DataService,
@@ -77,7 +86,8 @@ export class CreacionnotificacionPage implements OnInit {
               public navCtrl: NavController,
               public stora: Storage,
               private afs: AngularFirestore,
-              private storage: AngularFireStorage
+              private storage: AngularFireStorage,
+              private networkService: ConexionService
               ) {
 
                 this.stora.get('inicio_sesion').then((val) => {
@@ -93,9 +103,10 @@ export class CreacionnotificacionPage implements OnInit {
                       handler: (event) => {
                       console.log('Clicked Save!');
                       console.log(event);
-                      this.fecha_creacion = new Date().setDate(event.day.value);
-                      this.fecha_creacion = new Date().setFullYear(event.year.value);
-                      this.fecha_creacion = new Date().setMonth(event.month.value);
+                      this.fecha_creacion.setDate(event.day.value);
+                      this.fecha_creacion.setFullYear(event.year.value);
+                      this.fecha_creacion.setMonth(event.month.value);
+                      console.log("Fecha: ", this.fecha_creacion);
                       }
                     }, {
                       text: 'Cancelar',
@@ -114,32 +125,28 @@ export class CreacionnotificacionPage implements OnInit {
 
   // Obtener ubicacion del Usuario
   agregarUbicacionActual() {
-    this.geolocation.getCurrentPosition().then((geoposition: Geoposition)=>{
+    this.geolocation.getCurrentPosition().then((geoposition: Geoposition) => {
       this.lat = geoposition.coords.latitude;
       this.lon = geoposition.coords.longitude;
-      console.log(geoposition.coords.latitude);
-      console.log(geoposition.coords.longitude);
+      this.notificacionService.changeUbicacionNueva(this.lat, this.lon);
     }).catch((error) => {
       console.log('Error getting location', error);
     });
   }
 
-  // Obtener ubicacion del Usuario
+  // Agregar otra ubicación para cargar la notificación
   agregarOtraUbicacion() {
-    this.navCtrl.navigateForward('/caminonuevo');
+    this.navCtrl.navigateForward('/agregarubicacion');
   }
 
   // Cuando se inicializa la vista, se inicializa el mapa
   ionViewWillEnter() {
   this.notificacionService.customLatitudNueva.subscribe(msg => this.lat = msg);
   this.notificacionService.customLongitudNueva.subscribe(msg => this.lon = msg);
-  console.log('Se agrego otra ubicacion: ', this.lat);
-  console.log('Se agrego otra ubicacion: ', this.lon);
   }
 
-  
   // Capturar una imagen con la camara del dispositivo
-  getPicture(event){
+  async getPicture(event) {
     const options: CameraOptions = {
       destinationType: this.camera.DestinationType.FILE_URI,
       encodingType: this.camera.EncodingType.JPEG,
@@ -149,35 +156,24 @@ export class CreacionnotificacionPage implements OnInit {
       sourceType: this.camera.PictureSourceType.CAMERA
     }
 
-    var img: any;
-    this.camera.getPicture(options).then( (imageData) => {
+    const resultado = await this.camera.getPicture(options).then( (imageData) => {
       console.log(imageData);
-      img = imageData;
+      this.img = imageData;
     })
     .catch(error => {
       console.error( error );
     });
 
-    const filePath = '/Image/' + this.newImage.id + '/' + 'Image' + (Math.floor(1000 + Math.random() * 9000) + 1);
-    const result = this.SaveImageRef(filePath, img);
-    const ref = result.ref;
-    result.task.then(a => {
-      ref.getDownloadURL().subscribe( a => {
-        console.log(a);
-        this.newImage.image = a;
-        this.loading = false;
-        this.imagen = a;
-      });
+    this.uploadImage(event);
 
-      this.afs.collection('Image').doc(this.newImage.id).set(this.newImage);
-    });
   }
 
+
  // Agregar imagen desde galeria
-  agregarImagen(event) {
+  async agregarImagen(event) {
 
     const options: CameraOptions = {
-      destinationType: this.camera.DestinationType.FILE_URI,
+      destinationType: this.camera.DestinationType.DATA_URL,
       encodingType: this.camera.EncodingType.JPEG,
       mediaType: this.camera.MediaType.PICTURE,
       quality: 100, // calidad de la imagen,
@@ -185,42 +181,27 @@ export class CreacionnotificacionPage implements OnInit {
       sourceType: this.camera.PictureSourceType.PHOTOLIBRARY
     }
 
-    var img: any;
-    this.camera.getPicture(options).then( (imageData) => {
-      img = imageData;
+    await this.camera.getPicture(options).then( (imageData) => {
+      this.img = imageData;
+
     })
     .catch(error => {
       console.error( error );
     });
 
-    this.loading = true;
+    var blob = new Blob([this.img], { type: 'image/jpeg' });
 
-    const reader = new FileReader();
-
-    reader.readAsDataURL(event.target.files[0]);
-    // For Preview Of Image
-    reader.onload = (e: any) => { // called once readAsDataURL is completed
-      this.url = e.target.result;
-
-      // For Uploading Image To Firebase
-      const fileraw = event.target.files[0];
-      console.log(fileraw)
-      const filePath = '/Image/' + this.newImage.id + '/' + 'Image' + (Math.floor(1000 + Math.random() * 9000) + 1);
-      const result = this.SaveImageRef(filePath, fileraw);
-      const ref = result.ref;
-      result.task.then(a => {
+    const filePath = '/Image/' + this.newImage.id + '/' + 'Image' + (Math.floor(1000 + Math.random() * 9000) + 1);
+    const result = this.SaveImageRef(filePath, blob);
+    const ref = result.ref;
+    result.task.then(a => {
         ref.getDownloadURL().subscribe( a => {
-          console.log(a);
           this.newImage.image = a;
-          this.loading = false;
           this.imagen = a;
         });
 
-        this.afs.collection('Image').doc(this.newImage.id).set(this.newImage);
-      });
-    }, error => { alert('Error'); }
-  
-  
+         this.afs.collection('Image').doc(this.newImage.id).set(this.newImage);
+     });
 
   }
 
@@ -276,14 +257,16 @@ export class CreacionnotificacionPage implements OnInit {
 
  async crearNotificacion() {
 
+  console.log("La fecha es:", this.fecha_creacion);
+
   // Valor de la notificacion creada depende del tipo
   this.notificacionService.customEstado.subscribe(msg => this.estado = msg);
   console.log(this.estado);
   this.notificacionService.customAfectacion.subscribe(msg => this.afectacion = msg);
   console.log(this.afectacion);
-  this.notificacionService.customLatitudNueva.subscribe(msg => this.lat_desembocadura = msg);
+  this.notificacionService.customLatitudCamino.subscribe(msg => this.lat_desembocadura = msg);
   console.log(this.lat_desembocadura);
-  this.notificacionService.customLongitudNueva.subscribe(msg => this.lon_desembocadura = msg);
+  this.notificacionService.customLongitudCamino.subscribe(msg => this.lon_desembocadura = msg);
 
   // Descripcion de la notificacion
   console.log(this.descripcion);
@@ -316,6 +299,9 @@ export class CreacionnotificacionPage implements OnInit {
     toast.present();
 } else {
     console.log(this.imagen);
+
+  
+
     const body = {
       fecha_creacion: this.fecha_creacion,
       lon: this.lon,
@@ -331,13 +317,25 @@ export class CreacionnotificacionPage implements OnInit {
       aksi: 'notificacionnueva'
     };
 
+    this.networkService.getNetworkStatus().subscribe((connected: boolean) => {
+      this.isConnected = connected;
+      if (!this.isConnected) {
+          console.log('Por favor enciende tu conexión a Internet');
+          this.stora.set('notificacion', body);
+          this.networkService.agregarNotificacion(body);
+      } else {
+        console.log('¡CONECTADO!');
+      }
+  });
+
+
     const provider: Observable <any> = this.postPvdr.postData(body, '/index.php');
 
     provider.subscribe(
       async data => {
           console.log('Se subscribio');
           if ( data !== null) {
-            this.navCtrl.navigateRoot(['/paginaprincipal']);
+            this.navCtrl.navigateForward(['/paginaprincipal']);
             const toast = await this.toastCtrl.create({
               message: 'Creacion Exitosa',
               duration: 3000
@@ -394,7 +392,7 @@ uploadImage(event) {
 SaveImageRef(filePath, file) {
   return {
     task: this.storage.upload(filePath, file)
-    , ref: this.storage.ref(filePath)
+    , ref: this.storage.ref(filePath),
   };
 }
 

@@ -1,3 +1,4 @@
+import { NotificacionesService } from 'src/app/services/notificaciones.service';
 
 import { Component, OnInit } from '@angular/core';
 import { MenuController, NavController } from '@ionic/angular';
@@ -7,14 +8,13 @@ import { Platform } from '@ionic/angular';
 import { Router } from '@angular/router';
 // Geolocalizacion
 import { Geolocation, Geoposition } from '@ionic-native/geolocation/ngx';
-import { NotificacionesService } from 'src/app/services/notificaciones.service';
 
 @Component({
-  selector: 'app-caminonuevo',
-  templateUrl: './caminonuevo.page.html',
-  styleUrls: ['./caminonuevo.page.scss'],
+  selector: 'app-agregarubicacion',
+  templateUrl: './agregarubicacion.page.html',
+  styleUrls: ['./agregarubicacion.page.scss'],
 })
-export class CaminonuevoPage implements OnInit {
+export class AgregarubicacionPage implements OnInit {
 
   componentes: Componente[] = [];
 
@@ -113,7 +113,7 @@ export class CaminonuevoPage implements OnInit {
     console.log(e.latlng);
 
     // Agregar ubicacion
-    this.notificacionService.changeCaminoNuevo(this.latitudnotif, this.longitudnotif);
+    this.notificacionService.changeUbicacionNueva(this.latitudnotif, this.longitudnotif);
   }
 
   // Confirmar ubicacion seleccionada
@@ -142,6 +142,5 @@ export class CaminonuevoPage implements OnInit {
 
 
 
+
 }
-
-
